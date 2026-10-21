@@ -715,8 +715,15 @@ body.maint-on.previewing>.w-full>.cyber-card,body.maint-on.previewing>div:not(#m
     <div id="bannerContainer" class="hidden animate-in" style="display:none;margin-bottom:24px">
       <div style="background:rgba(0,0,0,0.4);border:1px solid rgba(217,70,239,0.3);border-radius:16px;padding:16px">
         <div style="font-size:10px;font-weight:700;color:#e879f9;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:12px;text-align:center">Player Banner</div>
-        <div style="display:flex;justify-content:center">
-          <img id="bannerImage" style="border-radius:8px;width:100%;max-height:200px;object-fit:contain;background:rgba(0,0,0,0.3)" alt="Player Banner">
+        <div id="bannerCard" style="position:relative;border-radius:12px;overflow:hidden;border:1px solid rgba(255,255,255,0.1);background:#0a021a">
+          <img id="bannerBg" style="display:block;width:100%;height:auto" alt="Player Banner" onerror="this.style.display='none'">
+          <div style="position:absolute;inset:0;display:flex;align-items:center;gap:12px;padding:0 16px;background:linear-gradient(90deg,rgba(0,0,0,0.75),rgba(0,0,0,0.15) 70%,transparent)">
+            <img id="bannerAvatar" style="width:56px;height:56px;border-radius:50%;border:2px solid rgba(255,255,255,0.85);background:rgba(0,0,0,0.5);object-fit:cover;flex-shrink:0" alt="Avatar" onerror="this.style.visibility='hidden'">
+            <div style="min-width:0">
+              <div id="bannerName" style="font-size:15px;font-weight:800;color:#fff;text-shadow:0 1px 4px rgba(0,0,0,0.9);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">-</div>
+              <div id="bannerLevel" style="font-size:11px;font-weight:700;color:#e879f9;text-shadow:0 1px 4px rgba(0,0,0,0.9)">Level -</div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -1021,8 +1028,15 @@ async function processToken(){
       show('profileContainer');
     }
 
-    if(result.banner_url){
-      document.getElementById('bannerImage').src=result.banner_url;
+    if(result.banner_bg || result.bannerId){
+      var bg=result.banner_bg||('https://ffitems.devhubx.org/items/'+result.bannerId);
+      var bimg=document.getElementById('bannerBg');
+      bimg.style.display='block';bimg.src=bg;
+      var bav=document.getElementById('bannerAvatar');
+      bav.style.visibility='visible';
+      bav.src=result.avatar_url||(result.headPic?('https://ffitems.devhubx.org/items/'+result.headPic):'');
+      document.getElementById('bannerName').innerText=result.nickname||('User '+(result.account_id||''));
+      document.getElementById('bannerLevel').innerText='Level '+(result.level!==null&&result.level!==undefined?result.level:'-');
       show('bannerContainer');
     }
 

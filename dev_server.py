@@ -486,7 +486,7 @@ class Handler(http.server.BaseHTTPRequestHandler):
         out = {'eat': eat, 'access_token': None, 'jwt_token': None,
                'nickname': None, 'region': None, 'account_id': None,
                'headPic': None, 'bannerId': None, 'level': None,
-               'avatar_url': None, 'banner_url': None,
+               'avatar_url': None, 'banner_url': None, 'banner_bg': None,
                'errors': {}}
 
         enc = urllib.parse.quote(eat)
@@ -540,6 +540,7 @@ class Handler(http.server.BaseHTTPRequestHandler):
                     out['avatar_url'] = f'https://ffitems.devhubx.org/items/{head_pic}'
                 if banner_id:
                     out['bannerId'] = banner_id
+                    out['banner_bg'] = f'https://ffitems.devhubx.org/items/{banner_id}'
                 if level is not None:
                     out['level'] = level
                 if head_pic and banner_id and out.get('nickname') and level is not None:
