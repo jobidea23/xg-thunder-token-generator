@@ -1,0 +1,32 @@
+{
+  "logo": "https://plain-apac-prod-public.komododecks.com/202609/10/UJcvrE1pPPPV6GGGwVXK/image.jpg",
+  "platforms": [
+    {
+      "id": "google",
+      "name": "Google",
+      "link": "https://auth.garena.com/universal/oauth?platform=8&response_type=code&locale=en-SG&client_id=100067&redirect_uri=https%3A%2F%2Fapi.ff.garena.co.id%2Fauth%2Fauth%2Fcallback_n%3Fsite%3Dhttps%3A%2F%2Fapi-discountstore.kiosgamer.gameid.garena.co.id%2Foauth%2Fcallback_redirect%2F"
+    },
+    {
+      "id": "facebook",
+      "name": "Facebook",
+      "link": "https://auth.garena.com/universal/oauth?platform=3&response_type=code&locale=en-SG&client_id=100067&redirect_uri=https://api.ff.garena.co.id/auth/auth/callback_n?site=https://api-discountstore.kiosgamer.gameid.garena.co.id/oauth/callback_redirect/"
+    },
+    {
+      "id": "apple",
+      "name": "Apple",
+      "link": "https://appleid.apple.com/auth/authorize?client_id=com.garena.connect.100067&redirect_uri=https%3A%2F%2Fauth.garena.com%2Foauth%2Flogin%2Fapple&response_mode=form_post&response_type=code+id_token&scope=name+email&state=69507abcacd811f19252da5d42aa8e87-platform%3D10%26response_type%3Dcode%26locale%3Den-SG%26client_id%3D100067%26redirect_uri%3Dhttps%253A%252F%252Fapi.ff.garena.co.id%252Fauth%252Fauth%252Fcallback_n%253Fsite%253Dhttps%253A%252F%252Fapi-discountstore.kiosgamer.gameid.garena.co.id%252Foauth%252Fcallback_redirect%252F%26version%3Duniversal"
+    },
+    {
+      "id": "x",
+      "name": "X (Twitter)",
+      "link": "https://auth.garena.com/universal/oauth?platform=11&response_type=code&locale=en-SG&client_id=100067&redirect_uri=https://api.ff.garena.co.id/auth/auth/callback_n?site=https://api-discountstore.kiosgamer.gameid.garena.co.id/oauth/callback_redirect/"
+    },
+    {
+      "id": "vk",
+      "name": "VK",
+      "link": "https://id.vk.ru/auth?app_id=54473168&device_id=&response_type=code&redirect_uri=https%3A%2F%2Fauth.garena.com%2Funiversal%2Foauth%2Fvk%3Fplatform%3D5%26response_type%3Dcode%26locale%3Den-SG%26client_id%3D100067%26redirect_uri%3Dhttps%3A%2F%2Fapi.ff.garena.co.id%2Fauth%2Fauth%2Fcallback_n%3Fsite%3Dhttps%3A%2F%2Fapi-discountstore.kiosgamer.gameid.garena.co.id%2Foauth%2Fcallback_redirect%2F%26vk_client_id%3D54473168&scope=vkid.personal_info&lang_id=3&scheme=&oauth_version=2&redirect_state=90205a783d264098868d63bc27f17a0e&code_challenge=QW2VNpTbLmnW9ZACal5hCvbmCieS9eiBLFJdLw6Kbb8&code_challenge_method=sha256"
+    }
+  ],
+  "maintenance": false,
+  "maintenance_until": 0
+}

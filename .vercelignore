@@ -1,0 +1,9 @@
+dev_server.py
+start.bat
+settings.json
+users.json
+uploads/
+__pycache__/
+*.pyc
+*.zip
+README.md
