@@ -1248,7 +1248,7 @@ async function updateBio(){
       document.getElementById('bioPreview').innerHTML=renderBioPreview(bio);
     }else{
       let msg=data.error||'Bio update failed. Dobara try karo.';
-      if(/Invalid or missing API key|key is of invalid type|service/i.test(msg))msg='Bio service abhi offline hai. Thodi der baad try karo.';
+      if(/Invalid or missing API key|key is of invalid type|service offline|service unavailable/i.test(msg))msg='Bio service abhi offline hai. Thodi der baad try karo.';
       else if(/extract open_id|Failed to retrieve JWT|extract data|Garena|Invalid|401|expired|Unauthorized/i.test(msg))msg='Token invalid ya expired hai. Left tab se naya Access Token generate karke wapas try karo.';
       updateBioResult('error','<h4><i class="fas fa-exclamation-triangle" style="color:#f87171"></i> UPDATE FAILED</h4>'+msg);
     }

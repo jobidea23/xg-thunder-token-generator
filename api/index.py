@@ -35,8 +35,17 @@ REDIS_TOKEN = (
     or os.environ.get('KV_REST_API_TOKEN')
     or os.environ.get('REDIS_REST_TOKEN')
 )
-SECRET = os.environ.get('XG_SECRET') or 'xg-thunder-set-XG_SECRET-env'
+XG_SECRET = os.environ.get('XG_SECRET') or 'xg-thunder-set-XG_SECRET-env'
 SESSION_TTL = 8 * 3600
+
+# Bio update services
+FF_BIO_KEY = os.environ.get('FF_BIO_KEY', '').strip()
+BIO_APIS = {
+    'ffutils': {'url': 'https://bio.ffutils.tech/api/update_bio', 'key': FF_BIO_KEY, 'method': 'GET'},
+    'wz': {'url': 'https://wzlongsign.vercel.app/updatebio', 'key': None, 'method': 'GET'},
+    'mbase_bio': {'url': 'https://ff-long-bio-update-tools.vercel.app/api/bio', 'key': 'm41nul-x', 'method': 'GET'},
+    'mbase_eat': {'url': 'https://ff-long-bio-update-tools.vercel.app/api/eat-to-bio', 'key': 'm41nul-x', 'method': 'GET'},
+}
 
 redis = Redis(url=REDIS_URL, token=REDIS_TOKEN) if (Redis and REDIS_URL and REDIS_TOKEN) else None
 
@@ -527,7 +536,7 @@ def _update_bio(token, bio, region=''):
 
     enc = urllib.parse.quote(raw)
     enc_bio = urllib.parse.quote(bio)
-    enc_region = urllib.parse.quote(region or '')
+    enc_region = urllib.parse.quote((region or '').upper())
 
     def json_url(url):
         try:
@@ -540,27 +549,28 @@ def _update_bio(token, bio, region=''):
         except Exception:
             return {}
 
+    calls = []
     if kind == 'eat':
-        calls = [
-            f'{M_BASE}/api/eat-to-bio?eat_token={enc}&bio={enc_bio}&key={M_KEY}',
-            f'{WZ_API}?token={enc}&bio={enc_bio}&region={enc_region}',
-        ]
+        if BIO_APIS['ffutils']['key']:
+            calls.append(('ffutils', f"{BIO_APIS['ffutils']['url']}?access_token={enc}&bio={enc_bio}&key={BIO_APIS['ffutils']['key']}"))
+        calls.append(('wz', f"{BIO_APIS['wz']['url']}?token={enc}&bio={enc_bio}&region={enc_region}"))
+        calls.append(('mbase_eat', f"{BIO_APIS['mbase_eat']['url']}?eat_token={enc}&bio={enc_bio}&key={BIO_APIS['mbase_eat']['key']}"))
     else:
-        calls = [
-            f'{WZ_API}?token={enc}&bio={enc_bio}&region={enc_region}',
-            f'{M_BASE}/api/bio?access_token={enc}&bio={enc_bio}&key={M_KEY}',
-            f'{M_BASE}/api/eat-to-bio?eat_token={enc}&bio={enc_bio}&key={M_KEY}',
-        ]
+        if BIO_APIS['ffutils']['key']:
+            calls.append(('ffutils', f"{BIO_APIS['ffutils']['url']}?access_token={enc}&bio={enc_bio}&key={BIO_APIS['ffutils']['key']}"))
+        calls.append(('wz', f"{BIO_APIS['wz']['url']}?token={enc}&bio={enc_bio}&region={enc_region}"))
+        calls.append(('mbase_bio', f"{BIO_APIS['mbase_bio']['url']}?access_token={enc}&bio={enc_bio}&key={BIO_APIS['mbase_bio']['key']}"))
+        calls.append(('mbase_eat', f"{BIO_APIS['mbase_eat']['url']}?eat_token={enc}&bio={enc_bio}&key={BIO_APIS['mbase_eat']['key']}"))
 
     last_msg = 'Bio update failed'
     last_code = 0
-    for url in calls:
+    for name, url in calls:
         data = json_url(url)
         if _bio_success(data):
             return 200, _norm_bio_resp(data)
         msg = data.get('message') or data.get('error') or data.get('server_response')
         if not msg and data.get('status_code'):
-            msg = f'service status {data["status_code"]}'
+            msg = f'{name} status {data["status_code"]}'
         if msg and last_msg == 'Bio update failed':
             last_msg = str(msg).strip()
         if data.get('status_code'):
