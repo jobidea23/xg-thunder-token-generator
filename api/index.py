@@ -195,21 +195,24 @@ def add_cors(resp):
 
 
 # ------------------------------------------------------------------ pages
+PUBLIC_DIR = os.path.join(BASE_DIR, 'public')
+
+
 @app.route('/')
 def home():
-    return redirect('/index.html', code=302)
+    return send_from_directory(PUBLIC_DIR, 'index.html')
 
 
 @app.route('/admin')
 @app.route('/admin/')
 def admin_page():
-    return redirect('/admin.html', code=302)
+    return send_from_directory(PUBLIC_DIR, 'admin.html')
 
 
 @app.route('/<path:filename>')
 def static_files(filename):
     ext = os.path.splitext(filename)[1].lower()
-    if ext not in ('.jpg', '.jpeg', '.png', '.gif', '.webp', '.svg', '.ico', '.css', '.js', '.woff', '.woff2', '.ttf'):
+    if ext not in ('.jpg', '.jpeg', '.png', '.gif', '.webp', '.svg', '.ico', '.css', '.js', '.woff', '.woff2', '.ttf', '.html'):
         abort(404)
     safe = os.path.basename(filename)
     for base in (os.path.join(BASE_DIR, 'public'), BASE_DIR):
