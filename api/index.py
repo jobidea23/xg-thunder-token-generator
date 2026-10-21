@@ -162,7 +162,7 @@ def get_users():
 
 
 # ------------------------------------------------------------------ auth
-signer = URLSafeTimedSerializer(SECRET, salt='xg-admin-v1')
+signer = URLSafeTimedSerializer(XG_SECRET, salt='xg-admin-v1')
 
 
 def make_token(username, role):
