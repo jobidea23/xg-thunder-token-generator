@@ -581,6 +581,7 @@ class Handler(http.server.BaseHTTPRequestHandler):
 
         enc = urllib.parse.quote(raw)
         enc_bio = urllib.parse.quote(bio)
+        enc_region = urllib.parse.quote(region or '')
 
         def json_url(url):
             try:
@@ -594,32 +595,54 @@ class Handler(http.server.BaseHTTPRequestHandler):
                 return {}
 
         if is_url_eat:
-            data = json_url(f'{M_BASE}/api/eat-to-bio?eat_token={enc}&bio={enc_bio}&key={M_KEY}')
-            if data.get('status') == 'success':
-                return {'code': 200, 'body': self._norm_bio_resp(data)}
+            calls = [
+                f'{M_BASE}/api/eat-to-bio?eat_token={enc}&bio={enc_bio}&key={M_KEY}',
+                f'{WZ_API}?token={enc}&bio={enc_bio}&region={enc_region}',
+            ]
         elif raw.startswith('eyJ'):
-            data = json_url(f'{WZ_API}?token={enc}&bio={enc_bio}&region={urllib.parse.quote(region)}')
-            if data.get('success'):
-                return {'code': 200, 'body': {'success': True, 'nickname': data.get('nickname') or '', 'uid': str(data.get('uid') or ''), 'region': region}}
+            calls = [
+                f'{WZ_API}?token={enc}&bio={enc_bio}&region={enc_region}',
+                f'{M_BASE}/api/bio?access_token={enc}&bio={enc_bio}&key={M_KEY}',
+                f'{M_BASE}/api/eat-to-bio?eat_token={enc}&bio={enc_bio}&key={M_KEY}',
+            ]
         else:
-            data = json_url(f'{M_BASE}/api/bio?access_token={enc}&bio={enc_bio}&key={M_KEY}')
-            if data.get('status') == 'success':
-                return {'code': 200, 'body': self._norm_bio_resp(data)}
-            data = json_url(f'{M_BASE}/api/eat-to-bio?eat_token={enc}&bio={enc_bio}&key={M_KEY}')
-            if data.get('status') == 'success':
-                return {'code': 200, 'body': self._norm_bio_resp(data)}
+            calls = [
+                f'{M_BASE}/api/bio?access_token={enc}&bio={enc_bio}&key={M_KEY}',
+                f'{WZ_API}?token={enc}&bio={enc_bio}&region={enc_region}',
+                f'{M_BASE}/api/eat-to-bio?eat_token={enc}&bio={enc_bio}&key={M_KEY}',
+            ]
 
-        msg = data.get('message') or data.get('error') or 'Bio update failed'
-        return {'code': 200, 'body': {'success': False, 'error': msg, 'code': data.get('status_code') or 0}}
+        last_msg = 'Bio update failed'
+        last_code = 0
+        for url in calls:
+            data = json_url(url)
+            if self._bio_success(data):
+                return {'code': 200, 'body': self._norm_bio_resp(data)}
+            msg = data.get('message') or data.get('error') or data.get('server_response')
+            if msg:
+                last_msg = str(msg).strip()
+            if data.get('status_code'):
+                last_code = data.get('status_code')
+
+        return {'code': 200, 'body': {'success': False, 'error': last_msg, 'code': last_code}}
+
+    def _bio_success(self, data):
+        if not isinstance(data, dict):
+            return False
+        if data.get('success') is True:
+            return True
+        if str(data.get('status', '')).lower() in ('success', 'ok', 'true'):
+            return True
+        return False
 
     def _norm_bio_resp(self, r):
         br = r.get('bio_update') or {}
         return {
             'success': True,
-            'nickname': r.get('account_nickname') or br.get('nickname') or '',
-            'uid': str(r.get('account_id') or br.get('uid') or ''),
+            'nickname': r.get('account_nickname') or r.get('nickname') or br.get('nickname') or '',
+            'uid': str(r.get('account_id') or r.get('uid') or br.get('uid') or ''),
             'region': r.get('region') or br.get('region') or '',
-            'platform': br.get('platform') or ''
+            'platform': r.get('platform') or br.get('platform') or ''
         }
 
 if __name__ == '__main__':
