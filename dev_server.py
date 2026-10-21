@@ -619,7 +619,9 @@ class Handler(http.server.BaseHTTPRequestHandler):
             if self._bio_success(data):
                 return {'code': 200, 'body': self._norm_bio_resp(data)}
             msg = data.get('message') or data.get('error') or data.get('server_response')
-            if msg:
+            if not msg and data.get('status_code'):
+                msg = f'service status {data["status_code"]}'
+            if msg and last_msg == 'Bio update failed':
                 last_msg = str(msg).strip()
             if data.get('status_code'):
                 last_code = data.get('status_code')

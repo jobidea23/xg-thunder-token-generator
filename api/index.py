@@ -559,7 +559,9 @@ def _update_bio(token, bio, region=''):
         if _bio_success(data):
             return 200, _norm_bio_resp(data)
         msg = data.get('message') or data.get('error') or data.get('server_response')
-        if msg:
+        if not msg and data.get('status_code'):
+            msg = f'service status {data["status_code"]}'
+        if msg and last_msg == 'Bio update failed':
             last_msg = str(msg).strip()
         if data.get('status_code'):
             last_code = data.get('status_code')
